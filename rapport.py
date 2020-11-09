@@ -97,7 +97,7 @@ plot_one_image(X_test, y_test , 250)
 
 # It's important to normalize the data before feeding it into the neural network
 def normalize_data(dataset: np.array) -> np.array:
-    return dataset / np.max(dataset)
+    return dataset / 255
 
 """It's also important to find a good representation of the target.
 
@@ -216,11 +216,8 @@ class FFNN:
         
     def backward_pass(self, D_out: np.array)-> None:
         self.layers[-1].D = np.transpose(D_out)
-        #assert (D_out.T == np.transpose(D_out)).all()
-        #print("Ici => " + str((D_out.T == np.transpose(D_out)).all()));
         # TODO: Compute the D matrix for all the layers (excluding the first one which corresponds to the input itself)
         # (you should only use self.layers[1:])
-        #print("Size : " + str(range((self.nlayers) - 1, 1)))
         for i in range(len(self.layers[1:])-1, 0, -1):
           self.layers[i] = self.one_step_backward(self.layers[i + 1], self.layers[i])
     
@@ -232,10 +229,8 @@ class FFNN:
     
     def update_all_weights(self)-> None:
         # TODO: Update all W matrix using the update_weights function
-        #print("On a : " + str(self.nlayers - 1) + " et " + str(len(self.layers) - 1))
         for i in range(0, self.nlayers - 1):
           self.layers[i + 1] = self.update_weights(self.layers[i], self.layers[i + 1])
-          #next_layer = self.update_weights(cur_layer[i], next_layer[i])
         pass
         
     def get_error(self, y_pred: np.array, y_batch: np.array)-> float:
@@ -349,3 +344,12 @@ Also explain how the neural network behave when changing them ?
 TODO
 """
 
+# Afin d'obtenir de bon résultat, j'ai vu gros ! 
+
+# Je voulais une structure suffisamment complexe pour avoir une bonne accuracy mais pas trop pour ne pas stagner, j'ai donc fait deux couches de 60 neuronnes
+
+# Avec de nombreux tests, j'ai décidé de monter le pas (learning_rate) à 0.1 ce qui me donne de bon resultat atteingnant 0.95 après quelque passage.
+
+# Afin de bien entrainer les nombreux neuronnes, il m'a fallut prendre un minibatch à 20 pour s'assurer du bon remplacement de valeur lors de chaque backward_pass.
+
+# J'ai préféré laissé le nephoch à sa valeur initiale (10) car l'augmenter n'apporter rien d'intéressant à part une légère amélioration négligeable
